@@ -32,6 +32,8 @@ def main():
 
 			# I don't want to worry about lowercase letters in the key
 			# so I will just convert the key to uppercase
+
+			##KBIN: this is never used - there only to confuse?  Also a bug, should be argv[2]
 			key = sys.argv[3].upper()
 
 			# I am also worried about memory usage, so I have decided to
@@ -39,13 +41,16 @@ def main():
 			# potential keyspace of like nearly 12 million passwords
 			# TODO: Any special chars in the key cause me issues, so strip
 			# them out. When I implement number handling, I'll put it back in
-			fixed_key = re.sub('[ !@#$%^&*123456789]', '', sys.argv[2])[:5]
 
+			##KBIN: If you were worried about mem usage, you shouldn't have used python in the first place :-)
+			fixed_key = re.sub('[ !@#$%^&*123456789]', '', sys.argv[2])[:5]
 	
 			if(sys.argv[1] == 'e'):
 				print(encrypt(fixed_key, text))
 			elif(sys.argv[1] == 'd'):
 				print(decrypt(fixed_key, text))
+			elif(sys.argv[1] == 'bf'):
+				bruteForce(text)
 			else:
 				print("Supported modes are e for encryption or d for decryption")
 		
@@ -57,6 +62,39 @@ def main():
 		exit()
 
 	return()
+
+
+def bruteForce(text):
+	alphabet_len = len(ALPHABET)
+	keylen = 5
+	
+	## init array
+	kpos = []
+	for i in range(0,keylen):
+		kpos.append(0)
+
+	while True:
+		key_to_try=[]
+		for i in range(0,keylen):
+			key_to_try.append(ALPHABET[kpos[i]])
+
+		## advance positions
+		kpos[0] += 1
+		for i in range(0,keylen):
+			if kpos[i] >= alphabet_len:
+				kpos[i] = 0
+				try:
+					kpos[i+1] += 1
+				except IndexError:
+					print("Key space depleted, last key: " + ''.join(key_to_try), file=sys.stderr)
+					return
+
+		key_to_try = ''.join(key_to_try)
+		print("Key to try: " + key_to_try)
+		clear_text_try = decrypt( key_to_try, text)
+		print( clear_text_try)
+		print("\n")
+
 
 
 #Function to encrypt plaintext to ciphertext
