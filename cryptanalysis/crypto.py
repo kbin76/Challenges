@@ -86,7 +86,7 @@ def bruteForce(text):
 			key_to_try.append(ALPHABET[kpos[i]])
 
 		key_to_try = ''.join(key_to_try)
-		print("Key to try: " + key_to_try)
+		print("KEY: " + key_to_try)
 		clear_text_try = decrypt( key_to_try, text)
 		print( clear_text_try)
 		print("\n")
