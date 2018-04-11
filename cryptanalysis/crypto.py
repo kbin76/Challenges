@@ -64,19 +64,32 @@ def main():
 	return()
 
 
+## loop through whole keyspace and try to decrypt with every possible key
+## output result to stdout (redirect this to a file)
+## then use "grep" to search resultset for possible clear phrase matches 
+## like " in a ", " for a "
+## that can be assumed to be in there (using some guess work since spaces
+## are not encrypted, word length can be used for guessing)
 def bruteForce(text):
 	alphabet_len = len(ALPHABET)
 	keylen = 5
 	
-	## init array
+	## init array of key char positions
 	kpos = []
 	for i in range(0,keylen):
 		kpos.append(0)
 
 	while True:
+		## construct key
 		key_to_try=[]
 		for i in range(0,keylen):
 			key_to_try.append(ALPHABET[kpos[i]])
+
+		key_to_try = ''.join(key_to_try)
+		print("Key to try: " + key_to_try)
+		clear_text_try = decrypt( key_to_try, text)
+		print( clear_text_try)
+		print("\n")
 
 		## advance positions
 		kpos[0] += 1
@@ -86,14 +99,9 @@ def bruteForce(text):
 				try:
 					kpos[i+1] += 1
 				except IndexError:
-					print("Key space depleted, last key: " + ''.join(key_to_try), file=sys.stderr)
+					print("Key space depleted, last key: " + key_to_try, file=sys.stderr)
 					return
 
-		key_to_try = ''.join(key_to_try)
-		print("Key to try: " + key_to_try)
-		clear_text_try = decrypt( key_to_try, text)
-		print( clear_text_try)
-		print("\n")
 
 
 
